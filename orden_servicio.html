@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orden de Servicio — Melin Joyeros</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --azul: #1a3fa8;
+            --azul-claro: #dce6f7;
+            --dorado: #c9a96e;
+            --crema: #f8f4ef;
+            --gris: #f5f5f5;
+            --texto: #1a1a1a;
+            --borde: #ddd;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--crema);
+            color: var(--texto);
+            padding: 16px;
+            font-size: 14px;
+        }
+
+        /* HEADER */
+        .header {
+            background: var(--azul);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-left h1 { font-size: 1.4rem; color: #fff; font-weight: 700; }
+        .header-left p { color: var(--dorado); font-size: 0.78rem; margin-top: 2px; }
+        .header-right { text-align: right; }
+        .header-right .num { background: rgba(255,255,255,0.15); border-radius: 10px; padding: 8px 14px; }
+        .header-right .num label { color: rgba(255,255,255,0.7); font-size: 0.7rem; display: block; }
+        .header-right .num input {
+            background: transparent; border: none; color: #fff;
+            font-size: 1rem; font-weight: 700; width: 120px;
+            text-align: right; outline: none;
+        }
+
+        /* SECCIONES */
+        .seccion {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid var(--borde);
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+        .seccion-titulo {
+            background: var(--azul);
+            color: #fff;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .seccion-body { padding: 14px 16px; }
+
+        /* CAMPOS */
+        .campo-grupo { display: grid; gap: 10px; margin-bottom: 10px; }
+        .campo-grupo.col2 { grid-template-columns: 1fr 1fr; }
+        .campo-grupo.col3 { grid-template-columns: 1fr 1fr 1fr; }
+        .campo { display: flex; flex-direction: column; gap: 4px; }
+        .campo label { font-size: 0.72rem; color: var(--azul); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .campo input, .campo select, .campo textarea {
+            border: 1.5px solid var(--borde);
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-size: 0.88rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--texto);
+            background: var(--gris);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .campo input:focus, .campo select:focus, .campo textarea:focus {
+            border-color: var(--azul);
+            background: #fff;
+        }
+        .campo textarea { resize: vertical; min-height: 70px; }
+
+        /* TIPO VISITA */
+        .tipo-visita { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+        .tipo-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid var(--borde);
+            background: var(--gris);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #555;
+        }
+        .tipo-btn.activo { border-color: var(--azul); background: var(--azul-claro); color: var(--azul); }
+
+        /* CHECKLIST */
+        .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--gris);
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .check-item.marcado { background: #e8f5e9; border-color: #4caf50; }
+        .check-item input[type="checkbox"] { display: none; }
+        .check-icon {
+            width: 22px; height: 22px;
+            border-radius: 6px;
+            border: 2px solid #ccc;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .check-item.marcado .check-icon { background: #4caf50; border-color: #4caf50; color: #fff; }
+        .check-item span { font-size: 0.82rem; line-height: 1.3; }
+
+        /* SUBTÍTULOS EN CHECKLIST */
+        .check-subtitulo {
+            background: var(--azul-claro);
+            color: var(--azul);
+            padding: 7px 12px;
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            border-radius: 8px;
+            margin: 10px 0 6px;
+            grid-column: 1 / -1;
+        }
+
+        /* CONTADOR */
+        .contador-row { display: flex; gap: 10px; margin-top: 10px; }
+        .contador {
+            flex: 1;
+            background: var(--azul-claro);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .contador label { font-size: 0.75rem; color: var(--azul); font-weight: 600; white-space: nowrap; }
+        .contador input {
+            border: 1.5px solid var(--azul);
+            border-radius: 6px;
+            padding: 5px 8px;
+            font-size: 0.88rem;
+            width: 60px;
+            text-align: center;
+            background: #fff;
+            outline: none;
+        }
+        .contador span { font-size: 0.82rem; color: #555; }
+
+        /* MATERIALES */
+        .material-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 90px 28px;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .material-row input {
+            border: 1.5px solid var(--borde);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 0.82rem;
+            background: var(--gris);
+            outline: none;
+            width: 100%;
+        }
+        .material-row input:focus { border-color: var(--azul); background: #fff; }
+        .btn-add {
+            background: var(--azul-claro);
+            color: var(--azul);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+        .btn-del {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 6px;
+            width: 28px; height: 28px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 2px solid var(--azul-claro);
+        }
+        .total-row label { font-weight: 700; color: var(--azul); }
+        .total-row span { font-size: 1.1rem; font-weight: 700; color: var(--texto); }
+
+        /* ESTADO GENERAL */
+        .estado-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .estado-btn {
+            padding: 14px;
+            border-radius: 12px;
+            border: 2px solid var(--borde);
+            text-align: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+        }
+        .estado-btn.optimo { color: #16a34a; }
+        .estado-btn.atencion { color: #d97706; }
+        .estado-btn.critico { color: #dc2626; }
+        .estado-btn.activo.optimo { background: #dcfce7; border-color: #16a34a; }
+        .estado-btn.activo.atencion { background: #fef3c7; border-color: #d97706; }
+        .estado-btn.activo.critico { background: #fee2e2; border-color: #dc2626; }
+
+        /* FIRMAS */
+        .firma-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .firma-box {
+            border: 2px dashed var(--borde);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+        .firma-box label { font-size: 0.72rem; color: var(--azul); font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 8px; }
+        .firma-canvas {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fafafa;
+            touch-action: none;
+            cursor: crosshair;
+        }
+        .btn-limpiar {
+            font-size: 0.72rem;
+            color: #dc2626;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+        .nombre-firma { margin-top: 8px; }
+        .nombre-firma input {
+            width: 100%;
+            border: none;
+            border-bottom: 1.5px solid var(--borde);
+            padding: 6px 4px;
+            font-size: 0.82rem;
+            background: transparent;
+            outline: none;
+            text-align: center;
+        }
+
+        /* BOTÓN GENERAR */
+        .btn-generar {
+            width: 100%;
+            padding: 18px;
+            background: var(--azul);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 6px;
+            letter-spacing: 0.5px;
+            transition: opacity 0.2s;
+        }
+        .btn-generar:active { opacity: 0.85; }
+
+        /* MODAL RESUMEN */
+        #modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        #modal.visible { display: flex; align-items: flex-start; justify-content: center; }
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-header h2 { color: var(--azul); font-size: 1.1rem; }
+        .btn-cerrar { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #888; }
+        #resumen-content { font-size: 0.85rem; line-height: 1.7; }
+        .resumen-seccion { margin-bottom: 14px; }
+        .resumen-seccion h3 { color: var(--azul); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid var(--azul-claro); padding-bottom: 4px; }
+        .btn-compartir {
+            width: 100%;
+            padding: 14px;
+            background: #25D366;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 14px;
+        }
+        .btn-imprimir {
+            width: 100%;
+            padding: 14px;
+            background: var(--azul);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        @media print {
+            body { padding: 0; background: #fff; }
+            .btn-generar, #modal { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-left">
+        <h1>Melin Joyeros</h1>
+        <p>Orden de Servicio</p>
+    </div>
+    <div class="header-right">
+        <div class="num">
+            <label>No. Orden</label>
+            <input type="text" id="num-orden" placeholder="OS-001-2025" value="OS-___-2025">
+        </div>
+    </div>
+</div>
+
+<!-- 1. DATOS DE LA VISITA -->
+<div class="seccion">
+    <div class="seccion-titulo">1. Datos de la Visita</div>
+    <div class="seccion-body">
+        <div class="campo-grupo col2">
+            <div class="campo">
+                <label>Fecha de Visita</label>
+                <input type="date" id="fecha">
+            </div>
+            <div class="campo">
+                <label>Sucursal</label>
+                <select id="sucursal">
+                    <option value="">Seleccionar...</option>
+                    <option>Mc Saturnino</option>
+                    <option>Mc 626</option>
+                    <option>Mc Ley Sahuaro</option>
+                    <option>Mc Andenes</option>
+                    <option>Mc Nogales</option>
+                    <option>Mc Navojoa</option>
+                    <option>Festiboda</option>
+                </select>
+            </div>
+        </div>
+        <div class="campo-grupo col2">
+            <div class="campo">
+                <label>Técnico</label>
+                <input type="text" id="tecnico" placeholder="Nombre del técnico">
+            </div>
+            <div class="campo">
+                <label>Contacto en Sitio</label>
+                <input type="text" id="contacto" placeholder="Nombre">
+            </div>
+        </div>
+        <div class="campo-grupo col2">
+            <div class="campo">
+                <label>Hora de Inicio</label>
+                <input type="time" id="hora-inicio">
+            </div>
+            <div class="campo">
+                <label>Hora de Fin</label>
+                <input type="time" id="hora-fin">
+            </div>
+        </div>
+        <div class="campo" style="margin-bottom:10px;">
+            <label>Tipo de Visita</label>
+            <div class="tipo-visita">
+                <div class="tipo-btn" onclick="toggleTipo(this)">🔧 Preventivo</div>
+                <div class="tipo-btn" onclick="toggleTipo(this)">🚨 Correctivo</div>
+                <div class="tipo-btn" onclick="toggleTipo(this)">🔧🚨 Ambos</div>
+            </div>
+        </div>
+        <div class="campo">
+            <label>Motivo / Descripción del Problema</label>
+            <textarea id="motivo" placeholder="Describe el motivo de la visita o la falla reportada..."></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- 2. CHECKLIST CÁMARAS Y DVR -->
+<div class="seccion">
+    <div class="seccion-titulo">2. Checklist — Cámaras y DVR Dahua</div>
+    <div class="seccion-body">
+        <div class="check-grid" id="checks-camaras">
+            <div class="check-subtitulo">Verificaciones</div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Limpieza de lentes</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Verificación de imagen</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Ajuste de ángulos</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Grabación continua OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Espacio en disco OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Acceso remoto OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Limpieza interna DVR</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Fecha y hora correcta</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Firmware actualizado</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Reproducción de video OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Red / conectividad OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Sin cámaras fuera de línea</span></div>
+        </div>
+        <div class="contador-row">
+            <div class="contador"><label>Cámaras revisadas</label><input type="number" id="camaras-rev" min="0" max="110" placeholder="0"><span>de 110</span></div>
+            <div class="contador"><label>DVR revisados</label><input type="number" id="dvr-rev" min="0" max="10" placeholder="0"><span>de 10</span></div>
+        </div>
+        <div class="campo" style="margin-top:10px;">
+            <label>Observaciones</label>
+            <textarea id="obs-camaras" placeholder="Observaciones sobre cámaras y DVR..."></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- 3. CHECKLIST PUERTAS Y NIEBLA -->
+<div class="seccion">
+    <div class="seccion-titulo">3. Checklist — Puertas y Generadores de Niebla</div>
+    <div class="seccion-body">
+        <div class="check-grid">
+            <div class="check-subtitulo">Puertas Automatizadas</div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Prueba de apertura/cierre</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Electroimán OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Sensores de acceso OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Fuente de poder OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Batería de respaldo OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Control remoto OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Lubricación aplicada</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Sin alarmas activas</span></div>
+            <div class="check-subtitulo">Generadores de Niebla</div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Inspección visual OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Prueba de disparo OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Nivel de fluido OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Conexiones eléctricas OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Control remoto OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Relevadores OK</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Sin fugas</span></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><div class="check-icon"></div><span>Temporizador configurado</span></div>
+        </div>
+        <div class="contador-row">
+            <div class="contador"><label>Puertas revisadas</label><input type="number" id="puertas-rev" min="0" max="8" placeholder="0"><span>de 8</span></div>
+            <div class="contador"><label>Generadores revisados</label><input type="number" id="niebla-rev" min="0" max="6" placeholder="0"><span>de 6</span></div>
+        </div>
+        <div class="campo" style="margin-top:10px;">
+            <label>Observaciones</label>
+            <textarea id="obs-puertas" placeholder="Observaciones sobre puertas y niebla..."></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- 4. MATERIALES -->
+<div class="seccion">
+    <div class="seccion-titulo">4. Materiales y Refacciones Utilizadas</div>
+    <div class="seccion-body">
+        <div style="display:grid; grid-template-columns:1fr 80px 90px 28px; gap:6px; margin-bottom:6px;">
+            <span style="font-size:0.72rem;color:var(--azul);font-weight:600;">DESCRIPCIÓN</span>
+            <span style="font-size:0.72rem;color:var(--azul);font-weight:600;text-align:center;">CANT.</span>
+            <span style="font-size:0.72rem;color:var(--azul);font-weight:600;text-align:center;">COSTO</span>
+            <span></span>
+        </div>
+        <div id="materiales-lista"></div>
+        <button class="btn-add" onclick="agregarMaterial()">+ Agregar material</button>
+        <div class="total-row">
+            <label>Total materiales:</label>
+            <span id="total-mat">$0.00</span>
+        </div>
+        <p style="font-size:0.72rem;color:#888;margin-top:8px;font-style:italic;">Los materiales son cargo adicional a la iguala mensual.</p>
+    </div>
+</div>
+
+<!-- 5. TRABAJO REALIZADO -->
+<div class="seccion">
+    <div class="seccion-titulo">5. Trabajo Realizado y Pendientes</div>
+    <div class="seccion-body">
+        <div class="campo" style="margin-bottom:10px;">
+            <label>Trabajo Realizado</label>
+            <textarea id="trabajo" placeholder="Describe detalladamente el trabajo realizado..." style="min-height:90px;"></textarea>
+        </div>
+        <div class="campo">
+            <label>Trabajos Pendientes / Recomendaciones</label>
+            <textarea id="pendientes" placeholder="Trabajos que quedan pendientes o recomendaciones..." style="min-height:70px;"></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- 6. ESTADO GENERAL -->
+<div class="seccion">
+    <div class="seccion-titulo">6. Estado General del Sistema</div>
+    <div class="seccion-body">
+        <div class="estado-grid">
+            <div class="estado-btn optimo" onclick="selEstado(this)">✅ Óptimo</div>
+            <div class="estado-btn atencion" onclick="selEstado(this)">⚠️ Requiere Atención</div>
+            <div class="estado-btn critico" onclick="selEstado(this)">🚨 Crítico</div>
+        </div>
+    </div>
+</div>
+
+<!-- 7. FIRMAS -->
+<div class="seccion">
+    <div class="seccion-titulo">7. Firmas</div>
+    <div class="seccion-body">
+        <div class="firma-grid">
+            <div class="firma-box">
+                <label>Firma Técnico</label>
+                <canvas class="firma-canvas" id="firma-tec" width="300" height="100"></canvas>
+                <button class="btn-limpiar" onclick="limpiarFirma('firma-tec')">✕ Limpiar</button>
+                <div class="nombre-firma"><input type="text" id="nombre-tec" placeholder="Nombre del técnico"></div>
+            </div>
+            <div class="firma-box">
+                <label>Firma Cliente</label>
+                <canvas class="firma-canvas" id="firma-cli" width="300" height="100"></canvas>
+                <button class="btn-limpiar" onclick="limpiarFirma('firma-cli')">✕ Limpiar</button>
+                <div class="nombre-firma"><input type="text" id="nombre-cli" placeholder="Nombre del cliente"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOTÓN GENERAR -->
+<button class="btn-generar" onclick="generarResumen()">📋 Generar y Compartir Orden</button>
+
+<!-- MODAL -->
+<div id="modal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>📋 Orden de Servicio Lista</h2>
+            <button class="btn-cerrar" onclick="cerrarModal()">✕</button>
+        </div>
+        <div id="resumen-content"></div>
+        <button class="btn-compartir" onclick="compartirWhatsApp()">📲 Enviar por WhatsApp</button>
+        <button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+    </div>
+</div>
+
+<script>
+    // Tipo de visita
+    let tipoVisita = [];
+    function toggleTipo(btn) {
+        btn.classList.toggle('activo');
+        const t = btn.textContent.trim();
+        if (btn.classList.contains('activo')) {
+            tipoVisita.push(t);
+        } else {
+            tipoVisita = tipoVisita.filter(x => x !== t);
+        }
+    }
+
+    // Checkboxes
+    function toggleCheck(el) {
+        el.classList.toggle('marcado');
+        const cb = el.querySelector('input[type="checkbox"]');
+        cb.checked = !cb.checked;
+        const icon = el.querySelector('.check-icon');
+        icon.textContent = el.classList.contains('marcado') ? '✓' : '';
+    }
+
+    // Estado general
+    function selEstado(btn) {
+        document.querySelectorAll('.estado-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+    }
+
+    // Materiales
+    let matCount = 0;
+    function agregarMaterial() {
+        matCount++;
+        const div = document.createElement('div');
+        div.className = 'material-row';
+        div.id = 'mat-' + matCount;
+        div.innerHTML = `
+            <input type="text" placeholder="Descripción del material">
+            <input type="number" placeholder="Cant." min="1" oninput="calcTotal()">
+            <input type="number" placeholder="$0.00" step="0.01" oninput="calcTotal()">
+            <button class="btn-del" onclick="document.getElementById('mat-${matCount}').remove(); calcTotal();">×</button>
+        `;
+        document.getElementById('materiales-lista').appendChild(div);
+    }
+
+    function calcTotal() {
+        let total = 0;
+        document.querySelectorAll('.material-row').forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            const cant = parseFloat(inputs[1].value) || 0;
+            const costo = parseFloat(inputs[2].value) || 0;
+            total += cant * costo;
+        });
+        document.getElementById('total-mat').textContent = '$' + total.toFixed(2);
+    }
+
+    // Firmas
+    function initFirma(id) {
+        const canvas = document.getElementById(id);
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+        let lastX = 0, lastY = 0;
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            if (e.touches) {
+                return {
+                    x: (e.touches[0].clientX - rect.left) * scaleX,
+                    y: (e.touches[0].clientY - rect.top) * scaleY
+                };
+            }
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+
+        canvas.addEventListener('mousedown', e => { drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; });
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; }, { passive: false });
+        canvas.addEventListener('mousemove', e => {
+            if (!drawing) return;
+            const p = getPos(e);
+            ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.stroke();
+            lastX = p.x; lastY = p.y;
+        });
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+            if (!drawing) return;
+            const p = getPos(e);
+            ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.stroke();
+            lastX = p.x; lastY = p.y;
+        }, { passive: false });
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('touchend', () => drawing = false);
+    }
+
+    function limpiarFirma(id) {
+        const canvas = document.getElementById(id);
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    initFirma('firma-tec');
+    initFirma('firma-cli');
+
+    // Generar resumen
+    function generarResumen() {
+        const fecha = document.getElementById('fecha').value;
+        const sucursal = document.getElementById('sucursal').value;
+        const tecnico = document.getElementById('tecnico').value;
+        const contacto = document.getElementById('contacto').value;
+        const horaI = document.getElementById('hora-inicio').value;
+        const horaF = document.getElementById('hora-fin').value;
+        const motivo = document.getElementById('motivo').value;
+        const trabajo = document.getElementById('trabajo').value;
+        const pendientes = document.getElementById('pendientes').value;
+        const obsCam = document.getElementById('obs-camaras').value;
+        const obsPuertas = document.getElementById('obs-puertas').value;
+        const camRev = document.getElementById('camaras-rev').value;
+        const dvrRev = document.getElementById('dvr-rev').value;
+        const puertasRev = document.getElementById('puertas-rev').value;
+        const nieblaRev = document.getElementById('niebla-rev').value;
+        const numOrden = document.getElementById('num-orden').value;
+        const estadoEl = document.querySelector('.estado-btn.activo');
+        const estado = estadoEl ? estadoEl.textContent.trim() : 'No especificado';
+
+        // Checks marcados
+        const checksMarcados = [...document.querySelectorAll('.check-item.marcado span')].map(s => s.textContent);
+
+        // Materiales
+        let materiales = [];
+        document.querySelectorAll('.material-row').forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            if (inputs[0].value) {
+                materiales.push(`${inputs[0].value} x${inputs[1].value || 1} = $${((parseFloat(inputs[1].value)||1)*(parseFloat(inputs[2].value)||0)).toFixed(2)}`);
+            }
+        });
+
+        const html = `
+            <div class="resumen-seccion">
+                <h3>📋 Datos Generales</h3>
+                <p><b>No. Orden:</b> ${numOrden}</p>
+                <p><b>Fecha:</b> ${fecha || 'No especificada'}</p>
+                <p><b>Sucursal:</b> ${sucursal || 'No especificada'}</p>
+                <p><b>Técnico:</b> ${tecnico || 'No especificado'}</p>
+                <p><b>Contacto:</b> ${contacto || 'No especificado'}</p>
+                <p><b>Horario:</b> ${horaI || '--'} a ${horaF || '--'}</p>
+                <p><b>Tipo:</b> ${tipoVisita.join(', ') || 'No especificado'}</p>
+                <p><b>Motivo:</b> ${motivo || 'No especificado'}</p>
+            </div>
+            <div class="resumen-seccion">
+                <h3>✅ Checklist (${checksMarcados.length} items completados)</h3>
+                ${checksMarcados.map(c => `<p>✓ ${c}</p>`).join('')}
+                <p><b>Cámaras:</b> ${camRev||0}/110 &nbsp; <b>DVR:</b> ${dvrRev||0}/10 &nbsp; <b>Puertas:</b> ${puertasRev||0}/8 &nbsp; <b>Niebla:</b> ${nieblaRev||0}/6</p>
+            </div>
+            ${materiales.length ? `<div class="resumen-seccion"><h3>🔧 Materiales</h3>${materiales.map(m => `<p>• ${m}</p>`).join('')}<p><b>Total: ${document.getElementById('total-mat').textContent}</b></p></div>` : ''}
+            <div class="resumen-seccion">
+                <h3>📝 Trabajo Realizado</h3>
+                <p>${trabajo || 'No especificado'}</p>
+            </div>
+            ${pendientes ? `<div class="resumen-seccion"><h3>⏳ Pendientes</h3><p>${pendientes}</p></div>` : ''}
+            ${obsCam ? `<div class="resumen-seccion"><h3>📹 Obs. Cámaras/DVR</h3><p>${obsCam}</p></div>` : ''}
+            ${obsPuertas ? `<div class="resumen-seccion"><h3>🚪 Obs. Puertas/Niebla</h3><p>${obsPuertas}</p></div>` : ''}
+            <div class="resumen-seccion">
+                <h3>🔴 Estado General</h3>
+                <p><b>${estado}</b></p>
+            </div>
+        `;
+
+        document.getElementById('resumen-content').innerHTML = html;
+        document.getElementById('modal').classList.add('visible');
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal').classList.remove('visible');
+    }
+
+    function compartirWhatsApp() {
+        const numOrden = document.getElementById('num-orden').value;
+        const fecha = document.getElementById('fecha').value;
+        const sucursal = document.getElementById('sucursal').value;
+        const tecnico = document.getElementById('tecnico').value;
+        const horaI = document.getElementById('hora-inicio').value;
+        const horaF = document.getElementById('hora-fin').value;
+        const motivo = document.getElementById('motivo').value;
+        const trabajo = document.getElementById('trabajo').value;
+        const pendientes = document.getElementById('pendientes').value;
+        const camRev = document.getElementById('camaras-rev').value;
+        const dvrRev = document.getElementById('dvr-rev').value;
+        const puertasRev = document.getElementById('puertas-rev').value;
+        const nieblaRev = document.getElementById('niebla-rev').value;
+        const estadoEl = document.querySelector('.estado-btn.activo');
+        const estado = estadoEl ? estadoEl.textContent.trim() : 'No especificado';
+        const checksMarcados = [...document.querySelectorAll('.check-item.marcado span')].map(s => s.textContent);
+        const total = document.getElementById('total-mat').textContent;
+
+        let msg = `*ORDEN DE SERVICIO — MELIN JOYEROS*\n`;
+        msg += `No. ${numOrden}\n\n`;
+        msg += `📅 *Fecha:* ${fecha}\n`;
+        msg += `🏪 *Sucursal:* ${sucursal}\n`;
+        msg += `👨‍🔧 *Técnico:* ${tecnico}\n`;
+        msg += `⏰ *Horario:* ${horaI} a ${horaF}\n`;
+        msg += `🔧 *Tipo:* ${tipoVisita.join(', ')}\n\n`;
+        msg += `📋 *Motivo:* ${motivo}\n\n`;
+        msg += `✅ *Checklist:* ${checksMarcados.length} puntos verificados\n`;
+        msg += `📹 Cámaras: ${camRev||0}/110 | DVR: ${dvrRev||0}/10\n`;
+        msg += `🚪 Puertas: ${puertasRev||0}/8 | 💨 Niebla: ${nieblaRev||0}/6\n\n`;
+        msg += `🔨 *Trabajo realizado:*\n${trabajo}\n\n`;
+        if (pendientes) msg += `⏳ *Pendientes:*\n${pendientes}\n\n`;
+        if (total !== '$0.00') msg += `💰 *Materiales:* ${total}\n\n`;
+        msg += `🔴 *Estado general:* ${estado}\n\n`;
+        msg += `_Melin Joyeros — Servicio Técnico_`;
+
+        const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    }
+
+    // Fecha por defecto hoy
+    document.getElementById('fecha').valueAsDate = new Date();
+
+    // Agregar 2 materiales iniciales
+    agregarMaterial();
+    agregarMaterial();
+</script>
+</body>
+</html>
