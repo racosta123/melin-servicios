@@ -765,26 +765,67 @@
         const puertasRev = document.getElementById('puertas-rev').value;
         const nieblaRev = document.getElementById('niebla-rev').value;
         const estadoEl = document.querySelector('.estado-btn.activo');
-        const estado = estadoEl ? estadoEl.textContent.trim() : 'No especificado';
+        const estado = estadoEl ? estadoEl.textContent.trim() : '';
         const checksMarcados = [...document.querySelectorAll('.check-item.marcado span')].map(s => s.textContent);
         const total = document.getElementById('total-mat').textContent;
+        const obsCam = document.getElementById('obs-camaras').value;
+        const obsPuertas = document.getElementById('obs-puertas').value;
+
+        // Firmas en base64
+        const firmaTec = document.getElementById('firma-tec').toDataURL();
+        const firmaCli = document.getElementById('firma-cli').toDataURL();
+        const nombreTec = document.getElementById('nombre-tec').value;
+        const nombreCli = document.getElementById('nombre-cli').value;
+
+        // Materiales
+        let matsParam = [];
+        document.querySelectorAll('.material-row').forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            if (inputs[0].value) matsParam.push(`${inputs[0].value}|${inputs[1].value||1}|${inputs[2].value||0}`);
+        });
+
+        // Construir URL de vista
+        const base = 'https://racosta123.github.io/melin-servicios/ver_orden.html';
+        const p = new URLSearchParams();
+        p.set('num', numOrden);
+        p.set('fecha', fecha);
+        p.set('sucursal', sucursal);
+        p.set('tecnico', tecnico);
+        p.set('contacto', document.getElementById('contacto').value);
+        p.set('hi', horaI);
+        p.set('hf', horaF);
+        p.set('tipo', tipoVisita.join(', '));
+        p.set('motivo', motivo);
+        p.set('trabajo', trabajo);
+        p.set('pendientes', pendientes);
+        p.set('checks', checksMarcados.join('|'));
+        p.set('cam', camRev||0);
+        p.set('dvr', dvrRev||0);
+        p.set('puertas', puertasRev||0);
+        p.set('niebla', nieblaRev||0);
+        p.set('obscam', obsCam);
+        p.set('obspuertas', obsPuertas);
+        p.set('estado', estado);
+        p.set('mats', matsParam.join('||'));
+        p.set('total', total);
+        p.set('ntec', nombreTec);
+        p.set('ncli', nombreCli);
+        p.set('ftec', firmaTec);
+        p.set('fcli', firmaCli);
+
+        const linkOrden = `${base}?${p.toString()}`;
 
         let msg = `*ORDEN DE SERVICIO — MELIN JOYEROS*\n`;
-        msg += `No. ${numOrden}\n\n`;
-        msg += `📅 *Fecha:* ${fecha}\n`;
+        msg += `No. ${numOrden} | ${fecha}\n\n`;
         msg += `🏪 *Sucursal:* ${sucursal}\n`;
         msg += `👨‍🔧 *Técnico:* ${tecnico}\n`;
         msg += `⏰ *Horario:* ${horaI} a ${horaF}\n`;
         msg += `🔧 *Tipo:* ${tipoVisita.join(', ')}\n\n`;
-        msg += `📋 *Motivo:* ${motivo}\n\n`;
         msg += `✅ *Checklist:* ${checksMarcados.length} puntos verificados\n`;
         msg += `📹 Cámaras: ${camRev||0}/110 | DVR: ${dvrRev||0}/10\n`;
         msg += `🚪 Puertas: ${puertasRev||0}/8 | 💨 Niebla: ${nieblaRev||0}/6\n\n`;
-        msg += `🔨 *Trabajo realizado:*\n${trabajo}\n\n`;
-        if (pendientes) msg += `⏳ *Pendientes:*\n${pendientes}\n\n`;
-        if (total !== '$0.00') msg += `💰 *Materiales:* ${total}\n\n`;
-        msg += `🔴 *Estado general:* ${estado}\n\n`;
-        msg += `_Melin Joyeros — Servicio Técnico_`;
+        msg += `🔴 *Estado:* ${estado}\n\n`;
+        msg += `📄 *Ver orden completa y guardar PDF:*\n${linkOrden}`;
 
         const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
