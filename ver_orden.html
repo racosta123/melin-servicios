@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orden de Servicio — Melin Joyeros</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --azul: #1a3fa8;
+            --azul-claro: #dce6f7;
+            --dorado: #c9a96e;
+            --crema: #f8f4ef;
+            --borde: #ddd;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--crema);
+            color: #1a1a1a;
+            padding: 16px;
+            font-size: 13px;
+        }
+
+        .btn-pdf {
+            width: 100%;
+            padding: 16px;
+            background: var(--azul);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+
+        .orden {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--borde);
+        }
+
+        .orden-header {
+            background: var(--azul);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .orden-header h1 { color: #fff; font-size: 1.2rem; }
+        .orden-header p { color: var(--dorado); font-size: 0.75rem; margin-top: 2px; }
+        .num-orden { text-align: right; color: #fff; }
+        .num-orden .num { font-size: 1.1rem; font-weight: 700; }
+        .num-orden .lbl { font-size: 0.7rem; opacity: 0.7; }
+
+        .seccion { border-bottom: 1px solid var(--borde); }
+        .seccion:last-child { border-bottom: none; }
+        .seccion-titulo {
+            background: var(--azul-claro);
+            color: var(--azul);
+            padding: 8px 16px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .seccion-body { padding: 14px 16px; }
+
+        .dato-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+        .dato { }
+        .dato .lbl { font-size: 0.7rem; color: var(--azul); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .dato .val { font-size: 0.88rem; margin-top: 2px; }
+
+        .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .check-ok {
+            display: flex; align-items: center; gap: 8px;
+            padding: 7px 10px;
+            background: #f0fdf4;
+            border-radius: 8px;
+            border: 1px solid #bbf7d0;
+            font-size: 0.8rem;
+        }
+        .check-ok::before { content: '✓'; color: #16a34a; font-weight: 700; }
+
+        .contadores { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .contador-badge {
+            background: var(--azul-claro);
+            color: var(--azul);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .mat-tabla { width: 100%; border-collapse: collapse; margin-top: 6px; }
+        .mat-tabla th { background: var(--azul); color: #fff; padding: 7px 10px; font-size: 0.75rem; text-align: left; }
+        .mat-tabla td { padding: 7px 10px; font-size: 0.82rem; border-bottom: 1px solid var(--borde); }
+        .mat-tabla tr:nth-child(even) td { background: #f9f9f9; }
+        .total-mat { text-align: right; font-weight: 700; color: var(--azul); margin-top: 8px; font-size: 0.9rem; }
+
+        .texto-campo { font-size: 0.85rem; line-height: 1.6; white-space: pre-wrap; }
+
+        .estado-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.88rem;
+        }
+        .estado-optimo { background: #dcfce7; color: #16a34a; }
+        .estado-atencion { background: #fef3c7; color: #d97706; }
+        .estado-critico { background: #fee2e2; color: #dc2626; }
+
+        .firma-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 6px; }
+        .firma-box { border: 1px solid var(--borde); border-radius: 10px; padding: 10px; text-align: center; }
+        .firma-box .lbl { font-size: 0.7rem; color: var(--azul); font-weight: 600; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        .firma-box img { width: 100%; height: 70px; object-fit: contain; border: 1px solid #eee; border-radius: 6px; }
+        .firma-box .nombre { font-size: 0.78rem; margin-top: 6px; color: #555; border-top: 1px solid var(--borde); padding-top: 4px; }
+
+        @media print {
+            .btn-pdf { display: none; }
+            body { background: #fff; padding: 0; }
+            .orden { border-radius: 0; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="btn-pdf" onclick="window.print()">🖨️ Guardar como PDF / Imprimir</button>
+
+<div class="orden" id="orden-content">
+    <div class="orden-header">
+        <div>
+            <h1>Melin Joyeros</h1>
+            <p>Orden de Servicio</p>
+        </div>
+        <div class="num-orden">
+            <div class="lbl">No. Orden</div>
+            <div class="num" id="v-num">—</div>
+            <div class="lbl" id="v-fecha">—</div>
+        </div>
+    </div>
+
+    <div class="seccion">
+        <div class="seccion-titulo">1. Datos de la Visita</div>
+        <div class="seccion-body">
+            <div class="dato-grid">
+                <div class="dato"><div class="lbl">Sucursal</div><div class="val" id="v-sucursal">—</div></div>
+                <div class="dato"><div class="lbl">Técnico</div><div class="val" id="v-tecnico">—</div></div>
+                <div class="dato"><div class="lbl">Contacto en Sitio</div><div class="val" id="v-contacto">—</div></div>
+                <div class="dato"><div class="lbl">Horario</div><div class="val" id="v-horario">—</div></div>
+                <div class="dato"><div class="lbl">Tipo de Visita</div><div class="val" id="v-tipo">—</div></div>
+            </div>
+            <div class="dato"><div class="lbl">Motivo</div><div class="val texto-campo" id="v-motivo">—</div></div>
+        </div>
+    </div>
+
+    <div class="seccion">
+        <div class="seccion-titulo">2. Checklist</div>
+        <div class="seccion-body">
+            <div class="check-grid" id="v-checks"></div>
+            <div class="contadores" id="v-contadores"></div>
+            <div id="v-obs-cam-wrap" style="margin-top:10px;display:none;">
+                <div class="dato"><div class="lbl">Obs. Cámaras/DVR</div><div class="val texto-campo" id="v-obs-cam"></div></div>
+            </div>
+            <div id="v-obs-puertas-wrap" style="margin-top:10px;display:none;">
+                <div class="dato"><div class="lbl">Obs. Puertas/Niebla</div><div class="val texto-campo" id="v-obs-puertas"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="seccion" id="mat-seccion" style="display:none;">
+        <div class="seccion-titulo">3. Materiales Utilizados</div>
+        <div class="seccion-body">
+            <table class="mat-tabla">
+                <thead><tr><th>Descripción</th><th>Cant.</th><th>Costo</th><th>Subtotal</th></tr></thead>
+                <tbody id="v-materiales"></tbody>
+            </table>
+            <div class="total-mat" id="v-total-mat"></div>
+        </div>
+    </div>
+
+    <div class="seccion">
+        <div class="seccion-titulo">4. Trabajo Realizado</div>
+        <div class="seccion-body">
+            <div class="texto-campo" id="v-trabajo">—</div>
+        </div>
+    </div>
+
+    <div class="seccion" id="pendientes-seccion" style="display:none;">
+        <div class="seccion-titulo">5. Pendientes / Recomendaciones</div>
+        <div class="seccion-body">
+            <div class="texto-campo" id="v-pendientes"></div>
+        </div>
+    </div>
+
+    <div class="seccion">
+        <div class="seccion-titulo">6. Estado General</div>
+        <div class="seccion-body">
+            <span class="estado-badge" id="v-estado">—</span>
+        </div>
+    </div>
+
+    <div class="seccion">
+        <div class="seccion-titulo">7. Firmas</div>
+        <div class="seccion-body">
+            <div class="firma-grid">
+                <div class="firma-box">
+                    <span class="lbl">Técnico</span>
+                    <img id="v-firma-tec" src="" alt="Firma">
+                    <div class="nombre" id="v-nombre-tec">—</div>
+                </div>
+                <div class="firma-box">
+                    <span class="lbl">Cliente</span>
+                    <img id="v-firma-cli" src="" alt="Firma">
+                    <div class="nombre" id="v-nombre-cli">—</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Leer datos del URL
+    const params = new URLSearchParams(window.location.search);
+
+    function get(key) { return decodeURIComponent(params.get(key) || ''); }
+
+    document.getElementById('v-num').textContent = get('num') || '—';
+    document.getElementById('v-fecha').textContent = get('fecha') || '—';
+    document.getElementById('v-sucursal').textContent = get('sucursal') || '—';
+    document.getElementById('v-tecnico').textContent = get('tecnico') || '—';
+    document.getElementById('v-contacto').textContent = get('contacto') || '—';
+    document.getElementById('v-horario').textContent = `${get('hi')} a ${get('hf')}`;
+    document.getElementById('v-tipo').textContent = get('tipo') || '—';
+    document.getElementById('v-motivo').textContent = get('motivo') || '—';
+    document.getElementById('v-trabajo').textContent = get('trabajo') || '—';
+
+    // Checks
+    const checks = get('checks');
+    if (checks) {
+        const grid = document.getElementById('v-checks');
+        checks.split('|').forEach(c => {
+            if (c) {
+                const d = document.createElement('div');
+                d.className = 'check-ok';
+                d.textContent = c;
+                grid.appendChild(d);
+            }
+        });
+    }
+
+    // Contadores
+    const contGrid = document.getElementById('v-contadores');
+    [['Cámaras', 'cam', '110'], ['DVR', 'dvr', '10'], ['Puertas', 'puertas', '8'], ['Niebla', 'niebla', '6']].forEach(([label, key, total]) => {
+        const val = get(key);
+        if (val) {
+            const d = document.createElement('div');
+            d.className = 'contador-badge';
+            d.textContent = `${label}: ${val}/${total}`;
+            contGrid.appendChild(d);
+        }
+    });
+
+    // Observaciones
+    const obsCam = get('obscam');
+    if (obsCam) {
+        document.getElementById('v-obs-cam-wrap').style.display = 'block';
+        document.getElementById('v-obs-cam').textContent = obsCam;
+    }
+    const obsPuertas = get('obspuertas');
+    if (obsPuertas) {
+        document.getElementById('v-obs-puertas-wrap').style.display = 'block';
+        document.getElementById('v-obs-puertas').textContent = obsPuertas;
+    }
+
+    // Materiales
+    const mats = get('mats');
+    if (mats) {
+        document.getElementById('mat-seccion').style.display = 'block';
+        const tbody = document.getElementById('v-materiales');
+        mats.split('||').forEach(m => {
+            if (m) {
+                const parts = m.split('|');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${parts[0]||''}</td><td>${parts[1]||''}</td><td>$${parts[2]||'0'}</td><td>$${((parseFloat(parts[1])||0)*(parseFloat(parts[2])||0)).toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            }
+        });
+        document.getElementById('v-total-mat').textContent = `Total: ${get('total')}`;
+    }
+
+    // Pendientes
+    const pendientes = get('pendientes');
+    if (pendientes) {
+        document.getElementById('pendientes-seccion').style.display = 'block';
+        document.getElementById('v-pendientes').textContent = pendientes;
+    }
+
+    // Estado
+    const estado = get('estado');
+    const estadoEl = document.getElementById('v-estado');
+    if (estado.includes('ptimo')) { estadoEl.textContent = estado; estadoEl.className = 'estado-badge estado-optimo'; }
+    else if (estado.includes('tenci')) { estadoEl.textContent = estado; estadoEl.className = 'estado-badge estado-atencion'; }
+    else if (estado.includes('tico')) { estadoEl.textContent = estado; estadoEl.className = 'estado-badge estado-critico'; }
+    else { estadoEl.textContent = estado || '—'; }
+
+    // Firmas
+    const firmaTec = get('ftec');
+    const firmaCli = get('fcli');
+    if (firmaTec) document.getElementById('v-firma-tec').src = firmaTec;
+    if (firmaCli) document.getElementById('v-firma-cli').src = firmaCli;
+    document.getElementById('v-nombre-tec').textContent = get('ntec') || '—';
+    document.getElementById('v-nombre-cli').textContent = get('ncli') || '—';
+</script>
+</body>
+</html>
